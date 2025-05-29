@@ -31,6 +31,7 @@ class SolicitudesController extends Controller
             'fecha_cierre' => 'nullable|date',
             'estado' => 'required|string',
             'observacion' => 'nullable|string',
+            'usuarioExt' => 'sometimes|boolean',
         ]);
 
         $validated['usuarioExt'] = $request->has('usuarioExt');
@@ -46,7 +47,7 @@ class SolicitudesController extends Controller
     public function edit($id)
     {
         $solicitud = Solicitud::findOrFail($id);
-        return view('solicitudes.update', compact('solicitud'));
+        return view('solicitudes.edit', compact('solicitud'));
     }
 
     // Actualizar la solicitud
@@ -60,11 +61,14 @@ class SolicitudesController extends Controller
             'fecha_cierre' => 'nullable|date|after_or_equal:fecha_registro',
             'estado' => 'required|in:Solicitado,Aprobado,Rechazado',
             'observacion' => 'nullable|string',
-            'usuarioExt' => 'required|boolean',
+            'usuarioExt' => 'sometimes|boolean',
         ]);
 
+        $data = $request->all();
+        $data['usuarioExt'] = $request->has('usuarioExt');
+
         $solicitud = Solicitud::findOrFail($id);
-        $solicitud->update($request->all());
+        $solicitud->update($data);
 
         return redirect()->route('solicitudes.index')
                          ->with('success', 'Solicitud actualizada correctamente.');
